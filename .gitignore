@@ -1,0 +1,59 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# ── Virtual environment ───────────────────────────────────────────────────────
+backend/venv/
+venv/
+.venv/
+env/
+
+# ── Model weights (too large for GitHub — see README for download links) ──────
+backend/models/*.pth
+backend/models/*.pt
+backend/models/*.onnx
+# Keep the placeholder so the directory is tracked
+!backend/models/.gitkeep
+
+# ── Dataset (third-party data — see README for download instructions) ─────────
+backend/dataset/label_images_semantic/
+backend/dataset/RGB_color_image_masks/
+# Keep the CSV class dictionary
+!backend/dataset/class_dict_seg.csv
+
+# ── Runtime directories (user uploads and generated outputs) ──────────────────
+backend/uploads/*
+backend/outputs/*
+!backend/uploads/.gitkeep
+!backend/outputs/.gitkeep
+
+# ── Node / frontend ───────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+frontend/.env
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── OS / editor ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.sw?
+
+# ── Thesis and research (not part of the application release) ─────────────────
+thesis/
+research/

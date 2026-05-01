@@ -1,0 +1,51 @@
+/* ── Bauhaus / Swiss International Style ─────────────────────────────────── */
+
+:root {
+  --bg:           #0a0a0a;
+  --surface:      #111111;
+  --surface-2:    #181818;
+  --border:       #242424;
+  --border-light: #2e2e2e;
+  --text:         #f0f0f0;
+  --text-muted:   #555555;
+  --text-dim:     #888888;
+  --accent:       #e63946;
+  --accent-dark:  #b02030;
+  --mono:         'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+  --sans:         'Helvetica Neue', Helvetica, 'Arial', system-ui, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  text-align: left;
+  border: none;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background: var(--surface-2);
+  padding: 2px 6px;
+  color: var(--text-dim);
+}

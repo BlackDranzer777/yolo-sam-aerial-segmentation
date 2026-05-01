@@ -1,0 +1,48 @@
+.result-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.detection-summary {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--surface-2);
+  border-left: 2px solid var(--accent);
+}
+
+.detection-count {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 10px;
+}
+
+.detection-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag {
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.65rem;
+  font-family: var(--mono);
+  padding: 3px 8px;
+  border: 1px solid var(--border-light);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.result-img {
+  width: 100%;
+  border: 1px solid var(--border);
+  object-fit: contain;
+  max-height: 600px;
+  display: block;
+}

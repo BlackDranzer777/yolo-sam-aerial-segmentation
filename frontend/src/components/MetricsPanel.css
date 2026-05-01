@@ -1,0 +1,141 @@
+.metrics-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.metrics-input-row {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+  margin-bottom: 24px;
+}
+
+.metrics-id-input {
+  width: 160px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-light);
+  border-right: none;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-family: var(--mono);
+  outline: none;
+  border-radius: 0;
+}
+
+.metrics-id-input:focus {
+  border-color: var(--accent);
+}
+
+.metrics-id-input::placeholder {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+/* Overall summary */
+.metrics-overall {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin: 24px 0;
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 600px) {
+  .metrics-overall { grid-template-columns: repeat(2, 1fr); }
+}
+
+.metric-box {
+  padding: 20px 16px;
+  text-align: left;
+  border-right: 1px solid var(--border);
+}
+
+.metric-box:last-child {
+  border-right: none;
+}
+
+.metric-label {
+  display: block;
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-family: var(--mono);
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+/* Section sub-headings */
+.metrics-panel h3 {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  margin: 28px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Tables */
+.metrics-table-wrap {
+  overflow-x: auto;
+}
+
+.metrics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.metrics-table th {
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-light);
+  white-space: nowrap;
+}
+
+.metrics-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.metrics-table td:nth-child(2) {
+  font-family: var(--sans);
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.metrics-table tr:hover td {
+  background: var(--surface-2);
+}
+
+.metrics-table tr.skipped td {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.note-cell {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--sans);
+}

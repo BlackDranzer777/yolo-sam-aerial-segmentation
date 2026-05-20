@@ -24,10 +24,14 @@ MODELS_DIR  = os.path.join(BACKEND_DIR, "models")
 # detection recall at the cost of speed.
 YOLO_MODEL_PATH = os.path.join(MODELS_DIR, "yolov8s-visdrone.pt")
 
+# COCO-trained YOLOv8n used exclusively for person detection.
+# VisDrone YOLO misses close-range pedestrians; COCO covers all scales.
+COCO_MODEL_PATH = os.path.join(MODELS_DIR, "yolov8n.pt")
+
 # Minimum detection confidence to pass a bounding box to SAM.
 # Lower → more boxes (higher recall, more false positives).
 # Higher → fewer boxes (higher precision, possible missed objects).
-YOLO_CONFIDENCE_THRESHOLD = 0.25
+YOLO_CONFIDENCE_THRESHOLD = 0.50
 
 # IoU threshold used by YOLO's non-maximum suppression step.
 YOLO_IOU_THRESHOLD = 0.45

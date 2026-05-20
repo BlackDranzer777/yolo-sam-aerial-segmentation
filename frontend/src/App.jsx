@@ -5,9 +5,15 @@ import ComparisonView from './components/ComparisonView'
 import MetricsPanel from './components/MetricsPanel'
 import './App.css'
 
+function extractDatasetId(filename) {
+  const base = filename.replace(/\.[^.]+$/, '')
+  return /^\d+$/.test(base) ? base.padStart(3, '0') : ''
+}
+
 function App() {
-  const [imageId, setImageId]         = useState(null)
-  const [segResults, setSegResults]   = useState(null)
+  const [imageId, setImageId]       = useState(null)
+  const [segResults, setSegResults] = useState(null)
+  const [datasetId, setDatasetId]   = useState('')
 
   return (
     <div className="app">
@@ -18,9 +24,10 @@ function App() {
       </header>
 
       <main className="app-main">
-        <ImageUploader onUploadSuccess={(id) => {
+        <ImageUploader onUploadSuccess={(id, filename) => {
           setImageId(id)
-          setSegResults(null)   // reset results on new upload
+          setSegResults(null)
+          setDatasetId(extractDatasetId(filename))
         }} />
 
         {imageId && (
@@ -32,7 +39,7 @@ function App() {
 
         {segResults && <ComparisonView results={segResults} />}
 
-        {segResults && <MetricsPanel imageId={imageId} />}
+        {segResults && <MetricsPanel imageId={imageId} datasetId={datasetId} />}
       </main>
     </div>
   )

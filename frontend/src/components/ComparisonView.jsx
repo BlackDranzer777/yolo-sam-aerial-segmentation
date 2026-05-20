@@ -35,7 +35,7 @@ export default function ComparisonView({ results }) {
         <div className="comparison-panel">
           <div className="panel-label yolo-label">YOLO Detection</div>
           <img
-            src={imageUrl(output_paths.boxes)}
+            src={`${imageUrl(output_paths.boxes)}?t=${results._ts || 0}`}
             alt="YOLO boxes"
             className="comparison-img"
           />
@@ -58,7 +58,7 @@ export default function ComparisonView({ results }) {
         <div className="comparison-panel">
           <div className="panel-label sam-label">YOLO + SAM</div>
           <img
-            src={imageUrl(output_paths.combined)}
+            src={`${imageUrl(output_paths.combined)}?t=${results._ts || 0}`}
             alt="YOLO + SAM combined"
             className="comparison-img"
           />

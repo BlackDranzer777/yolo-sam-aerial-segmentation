@@ -1,0 +1,416 @@
+{
+  "summary": {
+    "evaluated_images": 11,
+    "mean_iou": 0.6384,
+    "mean_precision": 0.8274,
+    "mean_recall": 0.6821
+  },
+  "images": [
+    {
+      "image_id": "001",
+      "detections": 1,
+      "evaluation": {
+        "per_object": [
+          {
+            "class_name": "person",
+            "iou": 0.1349,
+            "precision": 0.9633,
+            "recall": 0.1356,
+            "confidence": 0.73,
+            "note": "merged 1 mask(s) \u2192 ICG class 15"
+          }
+        ],
+        "per_class": {
+          "person": {
+            "mean_iou": 0.1349,
+            "mean_precision": 0.9633,
+            "mean_recall": 0.1356,
+            "count": 1
+          }
+        },
+        "overall": {
+          "mean_iou": 0.1349,
+          "mean_precision": 0.9633,
+          "mean_recall": 0.1356,
+          "evaluated_count": 1
+        }
+      }
+    },
+    {
+      "image_id": "004",
+      "detections": 4,
+      "evaluation": {
+        "per_object": [
+          {
+            "class_name": "car",
+            "iou": 0.7731,
+            "precision": 0.7877,
+            "recall": 0.9766,
+            "confidence": 0.81,
+            "note": "merged 3 mask(s) \u2192 ICG class 17"
+          },
+          {
+            "class_name": "bicycle",
+            "iou": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "confidence": 0.71,
+            "note": "merged 1 mask(s) \u2192 ICG class 18"
+          }
+        ],
+        "per_class": {
+          "car": {
+            "mean_iou": 0.7731,
+            "mean_precision": 0.7877,
+            "mean_recall": 0.9766,
+            "count": 3
+          },
+          "bicycle": {
+            "mean_iou": 0.0,
+            "mean_precision": 0.0,
+            "mean_recall": 0.0,
+            "count": 1
+          }
+        },
+        "overall": {
+          "mean_iou": 0.3866,
+          "mean_precision": 0.3938,
+          "mean_recall": 0.4883,
+          "evaluated_count": 2
+        }
+      }
+    },
+    {
+      "image_id": "011",
+      "detections": 1,
+      "evaluation": {
+        "per_object": [
+          {
+            "class_name": "car",
+            "iou": 0.8472,
+            "precision": 0.8652,
+            "recall": 0.9761,
+            "confidence": 0.88,
+            "note": "merged 1 mask(s) \u2192 ICG class 17"
+          }
+        ],
+        "per_class": {
+          "car": {
+            "mean_iou": 0.8472,
+            "mean_precision": 0.8652,
+            "mean_recall": 0.9761,
+            "count": 1
+          }
+        },
+        "overall": {
+          "mean_iou": 0.8472,
+          "mean_precision": 0.8652,
+          "mean_recall": 0.9761,
+          "evaluated_count": 1
+        }
+      }
+    },
+    {
+      "image_id": "022",
+      "detections": 3,
+      "evaluation": {
+        "per_object": [
+          {
+            "class_name": "car",
+            "iou": 0.9331,
+            "precision": 0.9854,
+            "recall": 0.9462,
+            "confidence": 0.94,
+            "note": "merged 2 mask(s) \u2192 ICG class 17"
+          },
+          {
+            "class_name": "person",
+            "iou": 0.0365,
+            "precision": 0.8281,
+            "recall": 0.0368,
+            "confidence": 0.58,
+            "note": "merged 1 mask(s) \u2192 ICG class 15"
+          }
+        ],
+        "per_class": {
+          "car": {
+            "mean_iou": 0.9331,
+            "mean_precision": 0.9854,
+            "mean_recall": 0.9462,
+            "count": 2
+          },
+          "person": {
+            "mean_iou": 0.0365,
+            "mean_precision": 0.8281,
+            "mean_recall": 0.0368,
+            "count": 1
+          }
+        },
+        "overall": {
+          "mean_iou": 0.4848,
+          "mean_precision": 0.9067,
+          "mean_recall": 0.4915,
+          "evaluated_count": 2
+        }
+      }
+    },
+    {
+      "image_id": "075",
+      "detections": 4,
+      "evaluation": {
+        "per_object": [
+          {
+            "class_name": "car",
+            "iou": 0.8485,
+            "precision": 0.9008,
+            "recall": 0.9359,
+            "confidence": 0.8,
+            "note": "merged 3 mask(s) \u2192 ICG class 17"
+          },
+          {
+            "class_name": "person",
+            "iou": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "confidence": 0.62,
+            "note": "merged 1 mask(s) \u2192 ICG class 15"
+          }
+        ],
+        "per_class": {
+          "car": {
+            "mean_iou": 0.8485,
+            "mean_precision": 0.9008,
+            "mean_recall": 0.9359,
+            "count": 3
+          },
+          "person": {
+            "mean_iou": 0.0,
+            "mean_precision": 0.0,
+            "mean_recall": 0.0,
+            "count": 1
+          }
+        },
+        "overall": {
+          "mean_iou": 0.4243,
+          "mean_precision": 0.4504,
+          "mean_recall": 0.4679,
+          "evaluated_count": 2
+        }
+      }
+    },
+    {
+      "image_id": "150",
+      "detections": 1,
+      "evaluation": {
+        "per_object": [
+          {
+            "class_name": "car",
+            "iou": 0.9401,
+            "precision": 0.9543,
+            "recall": 0.9845,
+            "confidence": 0.94,
+            "note": "merged 1 mask(s) \u2192 ICG class 17"
+          }
+        ],
+        "per_class": {
+          "car": {
+            "mean_iou": 0.9401,
+            "mean_precision": 0.9543,
+            "mean_recall": 0.9845,
+            "count": 1
+          }
+        },
+        "overall": {
+          "mean_iou": 0.9401,
+          "mean_precision": 0.9543,
+          "mean_recall": 0.9845,
+          "evaluated_count": 1
+        }
+      }
+    },
+    {
+      "image_id": "165",
+      "detections": 5,
+      "evaluation": {
+        "per_object": [
+          {
+            "class_name": "car",
+            "iou": 0.8858,
+            "precision": 0.911,
+            "recall": 0.9696,
+            "confidence": 0.93,
+            "note": "merged 2 mask(s) \u2192 ICG class 17"
+          },
+          {
+            "class_name": "person",
+            "iou": 0.1314,
+            "precision": 0.6802,
+            "recall": 0.1401,
+            "confidence": 0.62,
+            "note": "merged 3 mask(s) \u2192 ICG class 15"
+          }
+        ],
+        "per_class": {
+          "car": {
+            "mean_iou": 0.8858,
+            "mean_precision": 0.911,
+            "mean_recall": 0.9696,
+            "count": 2
+          },
+          "person": {
+            "mean_iou": 0.1314,
+            "mean_precision": 0.6802,
+            "mean_recall": 0.1401,
+            "count": 3
+          }
+        },
+        "overall": {
+          "mean_iou": 0.5086,
+          "mean_precision": 0.7956,
+          "mean_recall": 0.5549,
+          "evaluated_count": 2
+        }
+      }
+    },
+    {
+      "image_id": "235",
+      "detections": 0,
+      "evaluation": null,
+      "note": "no detections"
+    },
+    {
+      "image_id": "238",
+      "detections": 1,
+      "evaluation": {
+        "per_object": [
+          {
+            "class_name": "car",
+            "iou": 0.9555,
+            "precision": 0.9977,
+            "recall": 0.9576,
+            "confidence": 0.93,
+            "note": "merged 1 mask(s) \u2192 ICG class 17"
+          }
+        ],
+        "per_class": {
+          "car": {
+            "mean_iou": 0.9555,
+            "mean_precision": 0.9977,
+            "mean_recall": 0.9576,
+            "count": 1
+          }
+        },
+        "overall": {
+          "mean_iou": 0.9555,
+          "mean_precision": 0.9977,
+          "mean_recall": 0.9576,
+          "evaluated_count": 1
+        }
+      }
+    },
+    {
+      "image_id": "411",
+      "detections": 2,
+      "evaluation": {
+        "per_object": [
+          {
+            "class_name": "car",
+            "iou": 0.6858,
+            "precision": 0.9992,
+            "recall": 0.6861,
+            "confidence": 0.73,
+            "note": "merged 2 mask(s) \u2192 ICG class 17"
+          }
+        ],
+        "per_class": {
+          "car": {
+            "mean_iou": 0.6858,
+            "mean_precision": 0.9992,
+            "mean_recall": 0.6861,
+            "count": 2
+          }
+        },
+        "overall": {
+          "mean_iou": 0.6858,
+          "mean_precision": 0.9992,
+          "mean_recall": 0.6861,
+          "evaluated_count": 1
+        }
+      }
+    },
+    {
+      "image_id": "531",
+      "detections": 2,
+      "evaluation": {
+        "per_object": [
+          {
+            "class_name": "car",
+            "iou": 0.9563,
+            "precision": 0.9927,
+            "recall": 0.9631,
+            "confidence": 0.73,
+            "note": "merged 2 mask(s) \u2192 ICG class 17"
+          }
+        ],
+        "per_class": {
+          "car": {
+            "mean_iou": 0.9563,
+            "mean_precision": 0.9927,
+            "mean_recall": 0.9631,
+            "count": 2
+          }
+        },
+        "overall": {
+          "mean_iou": 0.9563,
+          "mean_precision": 0.9927,
+          "mean_recall": 0.9631,
+          "evaluated_count": 1
+        }
+      }
+    },
+    {
+      "image_id": "568",
+      "detections": 6,
+      "evaluation": {
+        "per_object": [
+          {
+            "class_name": "car",
+            "iou": 0.9771,
+            "precision": 0.998,
+            "recall": 0.9791,
+            "confidence": 0.87,
+            "note": "merged 1 mask(s) \u2192 ICG class 17"
+          },
+          {
+            "class_name": "person",
+            "iou": 0.4193,
+            "precision": 0.5668,
+            "recall": 0.617,
+            "confidence": 0.61,
+            "note": "merged 5 mask(s) \u2192 ICG class 15"
+          }
+        ],
+        "per_class": {
+          "car": {
+            "mean_iou": 0.9771,
+            "mean_precision": 0.998,
+            "mean_recall": 0.9791,
+            "count": 1
+          },
+          "person": {
+            "mean_iou": 0.4193,
+            "mean_precision": 0.5668,
+            "mean_recall": 0.617,
+            "count": 5
+          }
+        },
+        "overall": {
+          "mean_iou": 0.6982,
+          "mean_precision": 0.7824,
+          "mean_recall": 0.798,
+          "evaluated_count": 2
+        }
+      }
+    }
+  ]
+}

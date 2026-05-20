@@ -61,9 +61,10 @@ def _serialisable(result: dict) -> dict:
         })
 
     return {
-        "image_id":    result["image_id"],
-        "detections":  result["detections"],
-        "seg_results": seg_summary,
+        "image_id":        result["image_id"],
+        "detections":      result["detections"],
+        "seg_results":     seg_summary,
+        "confidence_used": result.get("confidence_used", config.YOLO_CONFIDENCE_THRESHOLD),
         "output_paths": {
             k: os.path.basename(v)
             for k, v in result["output_paths"].items()
@@ -106,7 +107,8 @@ def detect(image_id: str):
     """
     Run YOLO detection only (no SAM).
 
-    Response: { "image_id", "detections", "output_paths": { "boxes" } }
+    Optional JSON body: { "confidence": float }
+    Response: { "image_id", "detections", "output_paths": { "boxes" }, "confidence_used" }
     """
     image_path = _find_upload(image_id)
     if image_path is None:
@@ -115,15 +117,21 @@ def detect(image_id: str):
     import cv2
     from utils.visualization import draw_boxes, save_visualization
 
-    detections = detector.detect(image_path)
+    body = request.get_json(silent=True) or {}
+    conf = body.get("confidence")
+    if conf is not None:
+        conf = float(conf)
+
+    detections = detector.detect(image_path, conf=conf)
     image_bgr  = cv2.imread(image_path)
     boxes_img  = draw_boxes(image_bgr, detections)
     boxes_path = save_visualization(boxes_img, image_id, "boxes")
 
     result = {
-        "image_id":   image_id,
-        "detections": detections,
-        "output_paths": {"boxes": os.path.basename(boxes_path)},
+        "image_id":        image_id,
+        "detections":      detections,
+        "confidence_used": conf if conf is not None else config.YOLO_CONFIDENCE_THRESHOLD,
+        "output_paths":    {"boxes": os.path.basename(boxes_path)},
     }
     _results_store[image_id] = result
     return jsonify(result), 200
@@ -134,13 +142,22 @@ def segment(image_id: str):
     """
     Run the full YOLO → SAM pipeline.
 
+    Optional JSON body: { "confidence": float }
     Response: serialisable pipeline result (see _serialisable helper above)
     """
     image_path = _find_upload(image_id)
     if image_path is None:
         return jsonify({"error": f"Image not found for id: {image_id}"}), 404
 
-    result = pipeline.run(image_path, image_id=image_id)
+    body = request.get_json(silent=True) or {}
+    conf = body.get("confidence")
+    if conf is not None:
+        conf = float(conf)
+
+    models = body.get("models")  # e.g. ["visdrone", "coco"] or subset
+
+    result = pipeline.run(image_path, image_id=image_id, confidence=conf, models=models)
+    result["confidence_used"] = conf if conf is not None else config.YOLO_CONFIDENCE_THRESHOLD
     _results_store[image_id] = result
 
     return jsonify(_serialisable(result)), 200

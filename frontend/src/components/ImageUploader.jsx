@@ -42,7 +42,7 @@ export default function ImageUploader({ onUploadSuccess }) {
     try {
       const data = await uploadImage(selectedFile, setProgress)
       setUploaded(true)
-      onUploadSuccess(data.image_id)
+      onUploadSuccess(data.image_id, selectedFile.name)
     } catch (err) {
       setError(err.response?.data?.error || 'Upload failed. Is the Flask server running?')
     } finally {

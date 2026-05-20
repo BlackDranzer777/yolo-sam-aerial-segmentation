@@ -8,13 +8,17 @@ Ground truth format (ICG dataset):
     label_images_semantic/<id>.png — grayscale PNG where each pixel value
     is a class index (0–23) matching the order in class_dict_seg.csv.
 
-Evaluation approach:
-    For each SAM-predicted mask:
-      1. Map the YOLO class name to an ICG class index (via config).
-      2. Extract the binary ground truth mask for that class from the GT image.
-      3. Compute IoU, Precision, Recall between predicted and GT binary masks.
+Evaluation approach (merged / semantic):
+    The ICG dataset provides semantic masks — all instances of a class share
+    one combined mask. We match this by merging all SAM predictions of the
+    same class into one mask before comparing against GT. This gives one
+    IoU per class, which is the standard semantic segmentation metric.
 
-    Aggregate per-class and overall metrics across all predictions.
+    For each class present in predictions:
+      1. Map the YOLO class name to an ICG class index (via config).
+      2. OR all SAM masks of that class into one merged predicted mask.
+      3. Compare merged mask against the full GT class mask (entire image).
+      4. Report IoU, Precision, Recall for that class.
 """
 
 import os
@@ -116,7 +120,11 @@ def load_ground_truth_mask(image_id: str, class_index: int) -> np.ndarray | None
 
 def evaluate_results(seg_results: list[dict], image_id: str) -> dict:
     """
-    Evaluate all SAM masks for one image against ICG ground truth.
+    Evaluate SAM masks for one image using merged (semantic) IoU.
+
+    All SAM masks of the same class are ORed into one combined predicted mask,
+    then compared against the full GT class mask once. This matches the ICG
+    dataset's semantic label format and gives one IoU per class.
 
     Args:
         seg_results: List of segmentation dicts from SAMSegmentor.segment().
@@ -126,92 +134,111 @@ def evaluate_results(seg_results: list[dict], image_id: str) -> dict:
     Returns:
         {
             "per_object": [ { class_name, iou, precision, recall, ... }, ... ],
-            "per_class":  { class_name: { iou, precision, recall, count }, ... },
+            "per_class":  { class_name: { mean_iou, mean_precision, mean_recall, count } },
             "overall":    { mean_iou, mean_precision, mean_recall, evaluated_count }
         }
+        per_object has one entry per class (the merged result).
     """
-    per_object = []
+    # ── Group predictions by ICG class index (not VisDrone name) ────────────────
+    # Multiple VisDrone classes can map to the same ICG class (e.g. car + van →
+    # class 17).  We must merge all of them into one mask before comparing against
+    # the GT, otherwise we evaluate the same GT mask multiple times.
+    icg_groups: dict[int, list[dict]] = {}       # icg_index → list of seg dicts
+    unmapped:   list[dict]            = []        # segs with no ICG mapping
 
     for seg in seg_results:
-        class_name  = seg["class_name"]
-        pred_mask   = seg["mask"].astype(bool)
-        icg_index   = config.VISDRONE_TO_ICG_CLASS.get(class_name)
-
+        icg_index = config.VISDRONE_TO_ICG_CLASS.get(seg["class_name"])
         if icg_index is None:
-            # Class not mappable to ICG — skip
-            per_object.append({
-                "class_name": class_name,
-                "iou":        None,
-                "precision":  None,
-                "recall":     None,
-                "note":       "no ICG class mapping",
-            })
-            continue
+            unmapped.append(seg)
+        else:
+            icg_groups.setdefault(icg_index, []).append(seg)
 
+    # ICG class index → human-readable label (first VisDrone name seen wins)
+    # Canonical human-readable label for each ICG class index
+    ICG_LABEL = {
+        15: "person",
+        17: "car",
+        18: "bicycle",
+    }
+
+    per_object = []
+
+    # Unmapped classes — report as skipped
+    for seg in unmapped:
+        per_object.append({
+            "class_name": seg["class_name"],
+            "iou":        None,
+            "precision":  None,
+            "recall":     None,
+            "confidence": None,
+            "note":       "no ICG class mapping",
+        })
+
+    for icg_index, segs in icg_groups.items():
         gt_mask = load_ground_truth_mask(image_id, icg_index)
+
+        label = ICG_LABEL.get(icg_index, f"class_{icg_index}")
 
         if gt_mask is None:
             per_object.append({
-                "class_name": class_name,
+                "class_name": label,
                 "iou":        None,
                 "precision":  None,
                 "recall":     None,
+                "confidence": None,
                 "note":       f"ground truth file not found for image {image_id}",
             })
             continue
 
-        # Resize pred mask to GT size if they differ (can happen with large images)
-        if pred_mask.shape != gt_mask.shape:
-            pred_resized = cv2.resize(
-                pred_mask.astype(np.uint8),
-                (gt_mask.shape[1], gt_mask.shape[0]),
-                interpolation=cv2.INTER_NEAREST
-            ).astype(bool)
-        else:
-            pred_resized = pred_mask
+        # Merge ALL SAM masks that share this ICG class into one predicted mask
+        merged_pred = np.zeros(gt_mask.shape, dtype=bool)
+        for seg in segs:
+            pred_mask = seg["mask"].astype(bool)
+            if pred_mask.shape != gt_mask.shape:
+                pred_mask = cv2.resize(
+                    pred_mask.astype(np.uint8),
+                    (gt_mask.shape[1], gt_mask.shape[0]),
+                    interpolation=cv2.INTER_NEAREST
+                ).astype(bool)
+            merged_pred |= pred_mask
 
-        iou               = calculate_iou(pred_resized, gt_mask)
-        precision, recall = calculate_precision_recall(pred_resized, gt_mask)
+        iou               = calculate_iou(merged_pred, gt_mask)
+        precision, recall = calculate_precision_recall(merged_pred, gt_mask)
+        mean_conf         = float(np.mean([s.get("confidence") or 0.0 for s in segs]))
 
         per_object.append({
-            "class_name": class_name,
+            "class_name": label,
             "iou":        round(iou, 4),
             "precision":  round(precision, 4),
             "recall":     round(recall, 4),
-            "confidence": seg.get("confidence"),
-            "note":       "ok",
+            "confidence": round(mean_conf, 2),
+            "note":       f"merged {len(segs)} mask(s) → ICG class {icg_index}",
         })
 
-    # ── Per-class aggregation ─────────────────────────────────────────────────
-    per_class = {}
+    # ── Per-class summary ─────────────────────────────────────────────────────
+    per_class_summary = {}
     for obj in per_object:
         if obj["iou"] is None:
             continue
-        cls = obj["class_name"]
-        if cls not in per_class:
-            per_class[cls] = {"iou": [], "precision": [], "recall": [], "count": 0}
-        per_class[cls]["iou"].append(obj["iou"])
-        per_class[cls]["precision"].append(obj["precision"])
-        per_class[cls]["recall"].append(obj["recall"])
-        per_class[cls]["count"] += 1
-
-    per_class_summary = {
-        cls: {
-            "mean_iou":       round(np.mean(v["iou"]), 4),
-            "mean_precision": round(np.mean(v["precision"]), 4),
-            "mean_recall":    round(np.mean(v["recall"]), 4),
-            "count":          v["count"],
+        cn = obj["class_name"]
+        icg_idx = next(
+            idx for idx, segs in icg_groups.items()
+            if ICG_LABEL.get(idx, f"class_{idx}") == cn
+        )
+        per_class_summary[cn] = {
+            "mean_iou":       obj["iou"],
+            "mean_precision": obj["precision"],
+            "mean_recall":    obj["recall"],
+            "count":          len(icg_groups[icg_idx]),
         }
-        for cls, v in per_class.items()
-    }
 
     # ── Overall metrics ───────────────────────────────────────────────────────
     valid = [o for o in per_object if o["iou"] is not None]
     if valid:
         overall = {
-            "mean_iou":        round(float(np.mean([o["iou"]       for o in valid])), 4),
-            "mean_precision":  round(float(np.mean([o["precision"]  for o in valid])), 4),
-            "mean_recall":     round(float(np.mean([o["recall"]     for o in valid])), 4),
+            "mean_iou":        round(float(np.mean([o["iou"]      for o in valid])), 4),
+            "mean_precision":  round(float(np.mean([o["precision"] for o in valid])), 4),
+            "mean_recall":     round(float(np.mean([o["recall"]    for o in valid])), 4),
             "evaluated_count": len(valid),
         }
     else:
@@ -221,7 +248,7 @@ def evaluate_results(seg_results: list[dict], image_id: str) -> dict:
         }
 
     return {
-        "per_object":  per_object,
-        "per_class":   per_class_summary,
-        "overall":     overall,
+        "per_object": per_object,
+        "per_class":  per_class_summary,
+        "overall":    overall,
     }

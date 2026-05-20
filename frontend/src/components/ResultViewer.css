@@ -1,3 +1,99 @@
+.confidence-control {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--surface-2);
+  border-left: 2px solid var(--border-light);
+}
+
+.confidence-control label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.confidence-control label strong {
+  color: var(--accent);
+  font-family: var(--mono);
+}
+
+.confidence-control input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.conf-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.60rem;
+  color: var(--text-dim);
+  margin-top: 6px;
+  font-family: var(--mono);
+}
+
+.model-selector {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--surface-2);
+  border-left: 2px solid var(--border-light);
+}
+
+.model-selector-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+
+.model-checkboxes {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.model-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.model-checkbox.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.model-checkbox input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.model-checkbox-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.model-checkbox-desc {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+
 .result-actions {
   display: flex;
   gap: 8px;

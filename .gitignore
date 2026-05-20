@@ -57,3 +57,7 @@ Thumbs.db
 # ── Thesis and research (not part of the application release) ─────────────────
 thesis/
 research/
+
+# ── Thesis image exports (large files, not application code) ──────────────────
+images for thesis/
+images_for_thesis/

@@ -16,12 +16,26 @@ import { detectObjects, segmentImage, imageUrl } from '../services/api'
 import LayerToggle from './LayerToggle'
 import './ResultViewer.css'
 
+const MODELS = [
+  { key: 'visdrone', label: 'VisDrone', desc: 'vehicles · aerial pedestrians' },
+  { key: 'coco',     label: 'COCO',     desc: 'close-range persons' },
+]
+
 export default function ResultViewer({ imageId, onSegmentComplete }) {
-  const [results, setResults]         = useState(null)
-  const [activeLayer, setActiveLayer] = useState('combined')
-  const [loading, setLoading]         = useState(false)
-  const [loadingMsg, setLoadingMsg]   = useState('')
-  const [error, setError]             = useState(null)
+  const [results, setResults]           = useState(null)
+  const [activeLayer, setActiveLayer]   = useState('combined')
+  const [loading, setLoading]           = useState(false)
+  const [loadingMsg, setLoadingMsg]     = useState('')
+  const [error, setError]               = useState(null)
+  const [confidence, setConfidence]     = useState(0.50)
+  const [activeModels, setActiveModels] = useState(['visdrone', 'coco'])
+  const [resultTs, setResultTs]         = useState(null)
+
+  function toggleModel(key) {
+    setActiveModels(prev =>
+      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+    )
+  }
 
   // Reset all state whenever a new image is uploaded
   useEffect(() => {
@@ -35,8 +49,9 @@ export default function ResultViewer({ imageId, onSegmentComplete }) {
     setLoadingMsg('Running YOLO detection…')
     setError(null)
     try {
-      const data = await detectObjects(imageId)
+      const data = await detectObjects(imageId, confidence)
       setResults(data)
+      setResultTs(Date.now())
       setActiveLayer('boxes')
     } catch (err) {
       setError(err.response?.data?.error || 'Detection failed.')
@@ -50,10 +65,12 @@ export default function ResultViewer({ imageId, onSegmentComplete }) {
     setLoadingMsg('Running YOLO → SAM pipeline… (this may take ~30s)')
     setError(null)
     try {
-      const data = await segmentImage(imageId)
+      const data = await segmentImage(imageId, confidence, activeModels)
+      const ts = Date.now()
       setResults(data)
+      setResultTs(ts)
       setActiveLayer('combined')
-      if (onSegmentComplete) onSegmentComplete(data)
+      if (onSegmentComplete) onSegmentComplete({ ...data, _ts: ts })
     } catch (err) {
       setError(err.response?.data?.error || 'Segmentation failed.')
     } finally {
@@ -67,6 +84,49 @@ export default function ResultViewer({ imageId, onSegmentComplete }) {
     <div className="card">
       <h2>Results</h2>
 
+      {/* Confidence threshold slider */}
+      <div className="confidence-control">
+        <label htmlFor="conf-slider">
+          Detection Confidence Threshold: <strong>{confidence.toFixed(2)}</strong>
+        </label>
+        <input
+          id="conf-slider"
+          type="range"
+          min="0.10"
+          max="0.90"
+          step="0.05"
+          value={confidence}
+          onChange={e => setConfidence(parseFloat(e.target.value))}
+          disabled={loading}
+        />
+        <div className="conf-labels">
+          <span>0.10 (more detections)</span>
+          <span>0.90 (fewer, more certain)</span>
+        </div>
+      </div>
+
+      {/* Model selector */}
+      <div className="model-selector">
+        <span className="model-selector-label">Detection Models</span>
+        <div className="model-checkboxes">
+          {MODELS.map(m => (
+            <label key={m.key} className={`model-checkbox ${activeModels.includes(m.key) ? 'active' : ''}`}>
+              <input
+                type="checkbox"
+                checked={activeModels.includes(m.key)}
+                onChange={() => toggleModel(m.key)}
+                disabled={loading}
+              />
+              <span className="model-checkbox-name">{m.label}</span>
+              <span className="model-checkbox-desc">{m.desc}</span>
+            </label>
+          ))}
+        </div>
+        {activeModels.length === 0 && (
+          <p className="error" style={{ marginTop: 8 }}>Select at least one model.</p>
+        )}
+      </div>
+
       {/* Action buttons */}
       <div className="result-actions">
         <button
@@ -79,7 +139,7 @@ export default function ResultViewer({ imageId, onSegmentComplete }) {
         <button
           className="btn btn-primary"
           onClick={handleSegment}
-          disabled={loading}
+          disabled={loading || activeModels.length === 0}
         >
           Run Segmentation (YOLO + SAM)
         </button>
@@ -118,7 +178,7 @@ export default function ResultViewer({ imageId, onSegmentComplete }) {
           {/* Output image */}
           {currentImage ? (
             <img
-              src={imageUrl(currentImage)}
+              src={`${imageUrl(currentImage)}?t=${resultTs}`}
               alt={`${activeLayer} output`}
               className="result-img"
             />

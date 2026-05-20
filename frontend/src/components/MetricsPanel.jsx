@@ -12,25 +12,21 @@ import { useState, useEffect } from 'react'
 import { evaluateResults } from '../services/api'
 import './MetricsPanel.css'
 
-export default function MetricsPanel({ imageId }) {
+export default function MetricsPanel({ imageId, datasetId: datasetIdProp }) {
   const [metrics, setMetrics]     = useState(null)
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState(null)
-  const [datasetId, setDatasetId] = useState('')
+  const [datasetId, setDatasetId] = useState(datasetIdProp || '')
 
-  // Reset when a new image is uploaded
+  // When component mounts (after segmentation), auto-run if we already know the dataset ID
   useEffect(() => {
-    setMetrics(null)
-    setError(null)
-    setDatasetId('')
-  }, [imageId])
-
-  async function handleEvaluate() {
-    const icgId = datasetId.trim().padStart(3, '0')
-    if (!icgId || isNaN(Number(icgId))) {
-      setError('Enter a valid ICG dataset ID (e.g. 001).')
-      return
+    if (datasetIdProp) {
+      setDatasetId(datasetIdProp)
+      runEvaluation(datasetIdProp)
     }
+  }, [])
+
+  async function runEvaluation(icgId) {
     setLoading(true)
     setError(null)
     setMetrics(null)
@@ -44,12 +40,24 @@ export default function MetricsPanel({ imageId }) {
     }
   }
 
+  async function handleEvaluate() {
+    const icgId = datasetId.trim().padStart(3, '0')
+    if (!icgId || isNaN(Number(icgId))) {
+      setError('Enter a valid ICG dataset ID (e.g. 001).')
+      return
+    }
+    runEvaluation(icgId)
+  }
+
   return (
     <div className="card metrics-panel">
       <h2>Evaluation Metrics</h2>
       <p className="metrics-note">
         Compares SAM masks against ICG Semantic Drone Dataset ground truth.
-        Enter the ICG image number that matches the image you uploaded (e.g.&nbsp;<code>001</code>).
+        {datasetIdProp
+          ? <> Detected image <code>{datasetIdProp}</code> — evaluation runs automatically.</>
+          : <> Enter the ICG image number that matches the image you uploaded (e.g.&nbsp;<code>001</code>).</>
+        }
       </p>
 
       <div className="metrics-input-row">

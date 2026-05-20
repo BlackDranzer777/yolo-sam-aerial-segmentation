@@ -17,6 +17,14 @@ Detection output format (one dict per object):
 from ultralytics import YOLO
 import config
 
+# Normalise VisDrone person-class variants to a single canonical label.
+# VisDrone uses "pedestrian" (individual) and "people" (group); COCO uses
+# "person". Merging them avoids three chips for the same object type in the UI.
+_NAME_NORMALISE = {
+    "pedestrian": "person",
+    "people":     "person",
+}
+
 
 class YOLODetector:
     """Thin wrapper around YOLOv8 for bounding-box detection."""
@@ -27,12 +35,14 @@ class YOLODetector:
         self.confidence_threshold = config.YOLO_CONFIDENCE_THRESHOLD
         self.iou_threshold = config.YOLO_IOU_THRESHOLD
 
-    def detect(self, image_path: str) -> list[dict]:
+    def detect(self, image_path: str, conf: float = None) -> list[dict]:
         """
         Run object detection on a single image.
 
         Args:
             image_path: Absolute or relative path to the input image.
+            conf:       Optional confidence threshold override. Falls back to
+                        config.YOLO_CONFIDENCE_THRESHOLD when not provided.
 
         Returns:
             List of detection dicts, each containing bbox, class_id,
@@ -40,7 +50,7 @@ class YOLODetector:
         """
         results = self.model.predict(
             source=image_path,
-            conf=self.confidence_threshold,
+            conf=conf if conf is not None else self.confidence_threshold,
             iou=self.iou_threshold,
             device=config.DEVICE,
             verbose=False,
@@ -53,7 +63,10 @@ class YOLODetector:
             detections.append({
                 "bbox":       [int(x1), int(y1), int(x2), int(y2)],
                 "class_id":   int(box.cls[0]),
-                "class_name": self.model.names[int(box.cls[0])],
+                "class_name": _NAME_NORMALISE.get(
+                    self.model.names[int(box.cls[0])],
+                    self.model.names[int(box.cls[0])]
+                ),
                 "confidence": round(float(box.conf[0]), 4),
             })
 

@@ -31,20 +31,27 @@ export async function uploadImage(file, onProgress) {
 /**
  * Run YOLO detection only (no SAM).
  * @param {string} imageId
- * @returns {{ image_id, detections, output_paths }}
+ * @param {number} [confidence]  Optional confidence threshold override (0.10–0.90)
+ * @returns {{ image_id, detections, confidence_used, output_paths }}
  */
-export async function detectObjects(imageId) {
-  const res = await axios.post(`${BASE}/detect/${imageId}`)
+export async function detectObjects(imageId, confidence) {
+  const body = confidence !== undefined ? { confidence } : {}
+  const res = await axios.post(`${BASE}/detect/${imageId}`, body)
   return res.data
 }
 
 /**
  * Run full YOLO → SAM pipeline.
  * @param {string} imageId
- * @returns {{ image_id, detections, seg_results, output_paths }}
+ * @param {number} [confidence]  Optional confidence threshold override (0.10–0.90)
+ * @param {string[]} [models]    Active model keys, e.g. ["visdrone", "coco"]
+ * @returns {{ image_id, detections, seg_results, confidence_used, output_paths }}
  */
-export async function segmentImage(imageId) {
-  const res = await axios.post(`${BASE}/segment/${imageId}`)
+export async function segmentImage(imageId, confidence, models) {
+  const body = {}
+  if (confidence !== undefined) body.confidence = confidence
+  if (models !== undefined)    body.models     = models
+  const res = await axios.post(`${BASE}/segment/${imageId}`, body)
   return res.data
 }
 
